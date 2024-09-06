@@ -10,7 +10,7 @@ Let's get started.
 
 
 At first, do some manipulations with .bfc files as shown [here](https://github.com/bhmsgame06/BFCTool/blob/main/README.md).
-Find any PIM and PPL chain you want, for example, commands:
+Find any PIM and PPL chain you want, for example, type commands to BFCTool CMD:
 ```
 findfn gamelogo.pim
 findfn gamelogo.ppl
