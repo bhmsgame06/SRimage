@@ -1,5 +1,5 @@
 # SRimage
-Tool for creating or converting PIM/PPL images from SolaRola game files.
+Tool for creating and converting PIM/PPL images from SolaRola game files.
 
 
 
