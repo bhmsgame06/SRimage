@@ -9,7 +9,7 @@ import java.util.zip.*;
 import static ru.bhms.srimg.PNG.*;
 
 public class SRImg {
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "1.1";
     public static boolean verbose = false;
     public static boolean ignoreErrors = false;
     public static int compressionLevel = 2;
@@ -97,7 +97,7 @@ public class SRImg {
         System.out.println();
         System.out.println("\t-i, --verbose                         - print a verbose information during conversion process.");
         System.out.println("\t-I, --no-verbose                      - do not print verbose information (set by default).");
-        System.out.println("\t-e, --ignore-errors                   - ignore all errors such as wrong PNG file signature error.");
+        System.out.println("\t-e, --ignore-errors                   - ignore all errors such as wrong PIM file signature error.");
         System.out.println("\t-E, --do-not-ignore-errors            - do not ignore errors (set by default).");
         System.out.println();
         System.out.println("\t-z, --comp <level>                    - set a compression level 0-9 (default is 2).");
@@ -109,6 +109,12 @@ public class SRImg {
     }
 
     public static int make(String png) {
+        if(verbose) {
+            System.out.println("[MAKE]");
+            System.out.println("PNG path: " + png);
+            System.out.println();
+        }
+
         try {
             BufferedImage image = ImageIO.read(new File(png));
             int width = image.getWidth();
@@ -118,6 +124,21 @@ public class SRImg {
 
             Vector<Integer> palette = Utils.getPalette(pxArr,isTransparent);
             int[] indices = Utils.getIndexArray(pxArr,palette);
+
+            if(verbose) {
+                System.out.println("PNG information:");
+                System.out.println("\tWidth: " + width);
+                System.out.println("\tHeight: " + height);
+                System.out.println("\tIs transparent: " + isTransparent);
+                System.out.println("\tTotal palette color number: " + palette.size());
+                System.out.println();
+            }
+
+            if(palette.size() > 256) {
+                System.err.println("Total palette color number must not be bigger than 256!");
+                System.err.println("Use some posterization or something else to PNG image...");
+                return 1;
+            }
 
             String noExt = Utils.removeExtension(png);
             DataOutputStream pimOut = new DataOutputStream(new FileOutputStream(noExt + ".pim"));
@@ -183,6 +204,13 @@ public class SRImg {
     }
 
     public static int reverse(String pim,String ppl) {
+        if(verbose) {
+            System.out.println("[REVERSE]");
+            System.out.println("PIM path: " + pim);
+            System.out.println("PPL path: " + ppl);
+            System.out.println();
+        }
+
         try {
             DataInputStream pimIn = new DataInputStream(new FileInputStream(pim));
             DataInputStream pplIn = new DataInputStream(new FileInputStream(ppl));
@@ -220,9 +248,9 @@ public class SRImg {
                 System.out.println("PIM parse summary:");
                 System.out.println("\tWidth: " + width);
                 System.out.println("\tHeight: " + height);
-                System.out.println("\tIHDR CRC: " + String.format("0x%04x",ihdrCRC));
-                System.out.println("\tIDAT CRC: " + String.format("0x%04x",idatCRC));
-                System.out.println("\tIDAT Adler: " + String.format("0x%04x",idatAdler));
+                System.out.println("\tIHDR CRC: " + String.format("0x%08x",ihdrCRC));
+                System.out.println("\tIDAT CRC: " + String.format("0x%08x",idatCRC));
+                System.out.println("\tIDAT Adler: " + String.format("0x%08x",idatAdler));
                 System.out.println("\tIDAT image data size: " + idatData.length + " bytes");
                 System.out.println();
             }
@@ -237,7 +265,7 @@ public class SRImg {
                 System.out.println("PPL parse summary:");
                 System.out.println("\tIs transparent: " + isTransparent);
                 System.out.println("\tColors count: " + colors);
-                System.out.println("\tPLTE CRC: " + String.format("0x%04x",plteCRC));
+                System.out.println("\tPLTE CRC: " + String.format("0x%08x",plteCRC));
                 System.out.println("\tPLTE palette data size: " + plteData.length + " bytes");
                 System.out.println();
             }
